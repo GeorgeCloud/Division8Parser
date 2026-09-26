@@ -1,0 +1,20 @@
+# dependencies / build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# python
+backend/.venv/
+backend/instance/
+__pycache__/
+
+# OS noise
+.DS_Store
+
+# challenge dataset — 289MB of specbook PDFs and their 267MB source archives
+# stay out of git; see README for how to obtain them
+source-zips/
+specbooks/
+
+# secrets — API keys live in backend/.env, never in git
+.env
