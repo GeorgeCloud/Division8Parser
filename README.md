@@ -59,6 +59,16 @@ Open **http://localhost:5173**, create a project, and upload one or more spec PD
 
 > Note: extraction makes LLM API calls — a typical schedule costs a few cents on the default model.
 
+## How it works
+
+1. **Upload** — every page's text layer is indexed with exact per-line coordinates (pdfplumber). Geometry comes from the PDF itself, never from the model.
+2. **Classify** — the LLM labels each page: contains hardware sets, contains related context (finish legends, manufacturer lists, cross-references), or irrelevant. Irrelevant pages never reach another LLM call.
+3. **Boundary scan** — on the hardware pages, a small call marks the line where each set starts.
+4. **Extract** — each set is extracted in its own call: the model assigns line IDs to components and reads their fields (qty, description, catalog, mfr vs. finish by column context), scoring every field 0-100.
+5. **Validate** — invented line IDs are dropped, bounding boxes are computed locally from the claimed lines, duplicates across page windows are merged, and holes in the set numbering are flagged as missing sets.
+6. **Review** — anything under 80 confidence is flagged for a human: edit or confirm fields, redraw a set's location (only never-searched page area costs a new LLM call), locate or accept missing sets.
+7. **Export** — JSON, CSV, or the flat challenge-format JSON.
+
 ## Optional configuration
 
 Set these in `backend/.env` only if you want to change the defaults:
